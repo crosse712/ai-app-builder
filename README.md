@@ -1,176 +1,245 @@
-# AI App Builder
+# 🚀 AI App Builder
 
-Build web applications with AI assistance using Google's Gemini AI through Genkit. Features real-time preview, code editing, and one-click deployment to GitHub and Vercel.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/sws-apps/ai-app-builder)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-14.2.5-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 
-## Features
+An intelligent web application builder powered by AI that enables users to create, modify, and deploy web applications through natural language conversations. Built with Next.js, TypeScript, and integrated with Gemini 2.0 Flash for advanced code generation.
 
-- **AI-Powered Code Generation**: Use Gemini AI with unlimited tokens to generate complete web applications
-- **Real-time Preview**: See your changes instantly in the preview panel
-- **Multiple Frameworks**: Support for HTML/CSS/JS, React, Vue, Angular, Svelte, and Next.js
-- **Monaco Editor**: Professional code editing experience with syntax highlighting
-- **GitHub Integration**: Deploy your projects directly to GitHub repositories
-- **Vercel Deployment**: One-click deployment to Vercel for instant hosting
-- **Responsive Design**: Split-panel interface with resizable panels
-- **Download Code**: Export your generated code as files
+## ✨ Features
 
-## Prerequisites
+### 🤖 **AI-Powered Development**
+- **Smart Code Generation**: Powered by Gemini 2.0 Flash for intelligent code creation
+- **Context-Aware Conversations**: AI remembers your entire conversation history
+- **Intent Recognition**: Automatically understands whether you want to create, modify, or discuss code
+- **Layout Preservation**: Intelligently preserves existing designs when updating content
 
-- Node.js 18+ installed
-- Google AI API key (for Gemini)
-- GitHub Personal Access Token (for GitHub deployment)
-- Vercel Token (for Vercel deployment)
+### 💬 **Advanced Chat Interface**
+- **Project-Specific Memory**: Each project maintains its own conversation history
+- **Visual Response Types**: Different badges for code generation, modifications, conversations, and explanations
+- **Export/Import Conversations**: Backup and restore your development history
+- **Real-time Updates**: See code changes reflected instantly in the editor
 
-## Setup Instructions
+### 🎨 **Development Environment**
+- **Monaco Editor**: Professional code editing with syntax highlighting
+- **Live Preview**: Real-time preview of your code changes
+- **Multi-File Support**: Manage multiple files with a built-in file explorer
+- **Resizable Panels**: Customize your workspace layout
+- **Auto-Save**: Automatic saving to local storage
+
+### 🚀 **Deployment Features**
+- **GitHub Integration**: 
+  - Create new repositories
+  - Update existing repositories
+  - Automatic commit messages
+  - GitHub Pages support
+- **Vercel Deployment**:
+  - One-click deployment
+  - Update existing projects
+  - Instant HTTPS URLs
+- **Project Management**: Choose between creating new projects or updating existing ones
+
+### 🎯 **Smart Features**
+- **Quick Actions**: Pre-configured templates for common app types
+- **Learning Panel**: Interactive learning suggestions based on your code
+- **Tutorials**: Built-in tutorials for popular frameworks
+- **Storage Warnings**: Clear notifications about local storage usage
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 14.2.5
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **AI Integration**: Google Gemini 2.0 Flash
+- **Code Editor**: Monaco Editor
+- **UI Components**: Lucide React Icons
+- **Panel Management**: React Resizable Panels
+- **Notifications**: React Hot Toast
+- **API Integration**: Octokit (GitHub), Vercel API
+
+## 📦 Installation
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Git
+
+### Local Development
 
 1. **Clone the repository**
-   ```bash
-   cd ai-app-builder
-   ```
+```bash
+git clone https://github.com/sws-apps/ai-app-builder.git
+cd ai-app-builder
+```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-   
-   Copy the example environment file:
-   ```bash
-   cp .env.local.example .env.local
-   ```
-   
-   Edit `.env.local` and add your API keys:
-   ```env
-   # Google AI (Gemini) Configuration
-   GOOGLE_GENAI_API_KEY=your_google_ai_api_key_here
-   
-   # GitHub Configuration (optional, for deployment)
-   GITHUB_TOKEN=your_github_personal_access_token_here
-   
-   # Vercel Configuration (optional, for deployment)
-   VERCEL_TOKEN=your_vercel_token_here
-   
-   # App Configuration
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
-
-4. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open the application**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000) in your browser
-
-## Getting API Keys
-
-### Google AI (Gemini) API Key
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Click "Create API Key"
-3. Copy the API key and add it to your `.env.local` file
-
-### GitHub Personal Access Token
-1. Go to GitHub Settings > Developer settings > Personal access tokens
-2. Click "Generate new token (classic)"
-3. Select scopes: `repo`, `workflow` (for creating repositories)
-4. Generate and copy the token
-
-### Vercel Token
-1. Go to [Vercel Account Settings](https://vercel.com/account/tokens)
-2. Click "Create Token"
-3. Name your token and copy it
-
-## Usage
-
-1. **Select a Framework**: Choose from HTML/CSS/JS, React, Vue, Angular, Svelte, or Next.js
-2. **Enter a Prompt**: Describe the application you want to build
-3. **Generate Code**: Click the "Generate" button or press Enter
-4. **Edit Code**: Modify the generated code in the Monaco editor
-5. **Preview**: See real-time updates in the preview panel
-6. **Deploy**: Click "Deploy to GitHub" or "Deploy to Vercel" to publish your app
-
-## Project Structure
-
-```
-ai-app-builder/
-├── app/
-│   ├── api/
-│   │   ├── generate/     # Gemini AI code generation
-│   │   ├── github/       # GitHub deployment API
-│   │   └── vercel/       # Vercel deployment API
-│   ├── layout.tsx        # Root layout
-│   ├── page.tsx          # Main application UI
-│   └── globals.css       # Global styles
-├── components/
-│   └── DeploymentDialog.tsx  # Deployment modal component
-├── lib/
-│   └── genkit.ts         # Genkit AI configuration
-├── public/               # Static assets
-├── package.json          # Dependencies
-└── README.md            # This file
-```
-
-## Technologies Used
-
-- **Next.js 14**: React framework with App Router
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Utility-first CSS framework
-- **Genkit**: Google's AI framework
-- **Gemini AI**: Google's generative AI model
-- **Monaco Editor**: VS Code's editor in the browser
-- **React Resizable Panels**: Flexible panel layout
-- **Octokit**: GitHub API client
-- **Framer Motion**: Animation library
-- **React Hot Toast**: Notifications
-
-## Features in Detail
-
-### AI Code Generation
-The app uses Google's Gemini 1.5 Flash model through Genkit to generate code based on natural language descriptions. The AI is prompted to create complete, functional, and styled applications.
-
-### Real-time Preview
-The preview panel uses an iframe with `srcDoc` to render the generated HTML/CSS/JS code instantly. Changes in the editor are reflected immediately.
-
-### GitHub Integration
-- Creates new repositories
-- Commits generated code
-- Sets up GitHub Pages for public repositories
-- Provides direct links to the repository
-
-### Vercel Deployment
-- Creates new Vercel projects
-- Deploys static sites instantly
-- Provides deployment URLs
-
-## Troubleshooting
-
-### npm install fails
-If you encounter permission errors:
 ```bash
-sudo npm cache clean --force
-sudo chown -R $(whoami) ~/.npm
 npm install
 ```
 
-### API Key Issues
-- Ensure your API keys are correctly set in `.env.local`
-- Restart the development server after changing environment variables
-- Check that your API keys have the necessary permissions
+3. **Run the development server**
+```bash
+npm run dev
+```
 
-### Deployment Failures
-- For GitHub: Ensure your token has `repo` scope
-- For Vercel: Ensure your token is valid and not expired
-- Check the browser console for detailed error messages
+4. **Open the application**
+```
+http://localhost:3000
+```
 
-## Contributing
+## 🔑 Configuration
 
-Contributions are welcome! Please feel free to submit pull requests or open issues.
+### API Keys Setup
 
-## License
+The application uses browser localStorage for API keys, ensuring security and user-specific configurations.
 
-MIT License - feel free to use this project for personal or commercial purposes.
+1. **Open the app** and click the **Settings** (key icon) in the header
+2. **Add your API keys**:
+   - **Gemini API Key**: Required for AI features ([Get it here](https://makersuite.google.com/app/apikey))
+   - **GitHub Token**: Optional, for GitHub deployment ([Create token](https://github.com/settings/tokens))
+   - **Vercel Token**: Optional, for Vercel deployment ([Get token](https://vercel.com/account/tokens))
 
-## Support
+### Environment Variables (Optional)
 
-For issues or questions, please open an issue on GitHub or contact the maintainers.
+For pre-configuration, create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+NEXT_PUBLIC_GITHUB_TOKEN=your_github_token
+NEXT_PUBLIC_VERCEL_TOKEN=your_vercel_token
+```
+
+**Note**: For security, we recommend users add their own keys through the UI rather than environment variables.
+
+## 🎮 Usage
+
+### Creating Your First App
+
+1. **Configure API Key**: Click the key icon and add your Gemini API key
+2. **Start Building**: 
+   - Type "Create a modern todo app with React" in the chat
+   - Or use Quick Actions for templates
+3. **See Results**: Watch as code generates in the editor with live preview
+4. **Iterate**: Continue chatting to modify and enhance your app
+5. **Deploy**: Use the GitHub or Vercel buttons to deploy your creation
+
+### Chat Commands Examples
+
+- **Create**: "Build a calculator app with React and Tailwind"
+- **Modify**: "Add a dark mode toggle to the header"
+- **Enhance**: "Make the buttons larger and add animations"
+- **Fix**: "Fix the submit button functionality"
+- **Explain**: "How does the useState hook work?"
+
+### Project Management
+
+- **Name Your Project**: Use the project name field in the header
+- **Switch Projects**: Each project maintains separate conversation history
+- **Export Conversations**: Download your development history as JSON
+- **Import Previous Work**: Restore conversations from backup
+
+## 🚢 Deployment
+
+### Deploy to Vercel (Recommended)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/sws-apps/ai-app-builder)
+
+Or manually:
+1. Fork this repository
+2. Go to [vercel.com](https://vercel.com)
+3. Import your forked repository
+4. Deploy with default settings
+
+### Deploy to Other Platforms
+
+The app is a standard Next.js application and can be deployed to:
+- Netlify
+- AWS Amplify
+- Railway
+- Render
+- Self-hosted with Node.js
+
+## 🏗️ Architecture
+
+```
+ai-app-builder/
+├── app/                    # Next.js app directory
+│   ├── api/               # API routes
+│   │   ├── generate/      # AI code generation
+│   │   ├── github/        # GitHub integration
+│   │   └── vercel/        # Vercel deployment
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Main application
+├── components/            # React components
+│   ├── ChatInterface.tsx  # AI chat system
+│   ├── EnhancedDeploymentDialog.tsx
+│   ├── SettingsModal.tsx  # API key management
+│   └── ...               # Other components
+├── public/               # Static assets
+└── data/                # Tutorial data
+```
+
+## 🔧 Advanced Features
+
+### Layout Preservation System
+
+The AI intelligently preserves existing layouts when modifying code:
+- Detects design change keywords: "change design", "update layout", "switch theme"
+- Maintains CSS classes and styling when updating content
+- Injects new features without breaking existing design
+
+### Conversation Context
+
+Each message includes up to 10 previous exchanges for context, enabling:
+- Coherent multi-step development
+- Reference to previous discussions
+- Consistent code evolution
+
+### Intent Recognition
+
+Automatic detection of user intent:
+- **Code Generation**: Creating new applications
+- **Code Modification**: Updating existing code
+- **Conversation**: General discussion
+- **Explanation**: Learning and understanding
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- AI powered by [Google Gemini](https://deepmind.google/technologies/gemini/)
+- Code editor by [Monaco Editor](https://microsoft.github.io/monaco-editor/)
+- Deployed on [Vercel](https://vercel.com)
+
+## 📧 Support
+
+For support, please open an issue in the GitHub repository or contact the maintainers.
+
+## 🚀 Roadmap
+
+- [ ] Multi-model AI support (GPT-4, Claude, etc.)
+- [ ] Collaborative editing features
+- [ ] Template marketplace
+- [ ] Custom component libraries
+- [ ] Mobile responsive editor
+- [ ] Plugin system
+- [ ] Docker containerization
+- [ ] CI/CD pipeline templates
+
+---
+
+<p align="center">Made with ❤️ by developers, for developers</p>

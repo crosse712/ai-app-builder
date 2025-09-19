@@ -1,0 +1,51 @@
+QUICK PUSH INSTRUCTIONS - AI APP BUILDER
+=========================================
+
+Your code is ready to push! The repository is set up at:
+https://github.com/sws-apps/ai-app-builder
+
+STATUS:
+✅ All files committed locally
+✅ Remote repository configured
+❌ Need authentication to push
+
+TO PUSH YOUR CODE RIGHT NOW:
+============================
+
+OPTION 1 - Using GitHub Token (5 minutes):
+-------------------------------------------
+1. Open: https://github.com/settings/tokens/new
+2. Token name: AI App Builder
+3. Expiration: 90 days (or your preference)
+4. Select scopes: ✓ repo (check the whole repo checkbox)
+5. Click: Generate token
+6. Copy the token (starts with ghp_)
+7. Run this command (replace YOUR_USERNAME and YOUR_TOKEN):
+
+cd /Users/kmh/ai-app-builder
+git push https://USERNAME:YOUR_TOKEN@github.com/sws-apps/ai-app-builder.git main
+
+Example:
+git push https://johnsmith:ghp_AbCdEfGhIjKlMnOpQrStUvWxYz123456@github.com/sws-apps/ai-app-builder.git main
+
+
+OPTION 2 - Quick Script (easier):
+----------------------------------
+After you get your token from step 1-6 above:
+
+cd /Users/kmh/ai-app-builder
+./push-to-github.sh USERNAME YOUR_TOKEN
+
+
+OPTION 3 - If you already have a token:
+----------------------------------------
+If you have a GitHub token saved somewhere, use it directly:
+
+cd /Users/kmh/ai-app-builder
+git push https://USERNAME:TOKEN@github.com/sws-apps/ai-app-builder.git main
+
+
+After pushing, your code will be live at:
+https://github.com/sws-apps/ai-app-builder
+
+Then you can deploy to Vercel from there!
