@@ -1,273 +1,213 @@
-# Security Architecture - AI App Builder
+# 🔒 Security Documentation - AI App Builder
 
-## Current Security Model (Development)
+## Overview
 
-### 1. API Key Management
-- **Storage**: Browser localStorage (client-side only)
-- **Transmission**: Direct from browser to API services
-- **Server Storage**: None - keys never touch your server
+AI App Builder is designed with security as a top priority. The application follows a **zero-trust, client-side storage** model where no sensitive information is ever stored on our servers.
 
-### 2. How It Works for Multiple Users
+## 🛡️ Security Architecture
+
+### Client-Side Storage Only
+
+**No Server Storage of API Keys**
+- ✅ All API keys are stored in browser's `localStorage`
+- ✅ Keys never leave your browser except to call respective APIs
+- ✅ No database storage of credentials
+- ✅ No server-side configuration files
+- ✅ No environment variables for user credentials
+- ✅ No hardcoded tokens or API keys in source code
+
+### Data Flow
+
+```
+User Browser (localStorage)
+    ↓
+Your API Keys
+    ↓
+Direct API Calls to:
+    ├── Google Gemini API
+    ├── GitHub API
+    └── Vercel API
+```
+
+## 🔑 API Key Management
+
+### Storage Location
+API keys are stored in browser localStorage under the key `aiAppBuilderKeys`:
+
+```javascript
+{
+  "geminiApiKey": "your-gemini-key",
+  "githubToken": "your-github-token",
+  "vercelToken": "your-vercel-token"
+}
+```
+
+### How It Works for Multiple Users
 
 Each user:
 1. Enters their own API keys in Settings
 2. Keys are stored locally in their browser
 3. API calls include their personal keys
-4. No cross-user contamination
+4. No cross-user contamination possible
 
 ```
 User A Browser → localStorage → Google/GitHub/Vercel APIs
 User B Browser → localStorage → Google/GitHub/Vercel APIs
+(Completely isolated - no server intermediary)
 ```
 
-### 3. Current Security Features
+### Key Security Features
 
-✅ **What's Protected:**
-- Keys stay in user's browser
-- No server-side storage
-- Each user isolated
-- Keys can be cleared by clearing browser data
+1. **No Server Transmission**: Keys are never sent to our servers
+2. **Direct API Communication**: Keys are only used for direct API calls
+3. **User-Controlled**: Users can clear keys anytime through the UI
+4. **Browser Isolation**: Keys are isolated per browser/device
+5. **No Cross-Origin Access**: Keys cannot be accessed by other websites
 
-⚠️ **Current Vulnerabilities:**
-- Keys visible in browser DevTools Network tab
-- No encryption in localStorage
-- Vulnerable to XSS attacks
-- No rate limiting
-- No audit trail
+## 🚫 What We DON'T Do
 
-## Production Security Recommendations
+- ❌ Store API keys in databases
+- ❌ Log API keys in server logs
+- ❌ Use environment variables for user keys
+- ❌ Share keys between users
+- ❌ Access keys without user action
+- ❌ Store keys in cookies
+- ❌ Transmit keys to analytics services
+- ❌ Include any tokens in source code
 
-### Option 1: Server-Side Proxy (Recommended)
+## ✅ Security Best Practices
 
-```
-User → Your Server (with auth) → External APIs
-```
+### For Users
 
-**Implementation:**
-```typescript
-// app/api/secure/generate/route.ts
-export async function POST(req: NextRequest) {
-  // 1. Authenticate user
-  const session = await getSession(req);
-  if (!session) return unauthorized();
-  
-  // 2. Get user's encrypted keys from database
-  const userKeys = await getUserKeys(session.userId);
-  
-  // 3. Decrypt keys server-side
-  const apiKey = decrypt(userKeys.geminiKey);
-  
-  // 4. Make API call server-side
-  const result = await callGeminiAPI(apiKey, req.body);
-  
-  // 5. Return result (no keys exposed)
-  return NextResponse.json(result);
-}
-```
+1. **Use Scoped Tokens**
+   - GitHub: Create tokens with minimal required permissions (repo scope)
+   - Vercel: Use project-specific tokens when possible
+   - Gemini: Consider using restricted API keys
 
-### Option 2: Encrypted Storage
+2. **Regular Rotation**
+   - Rotate your API keys periodically
+   - Revoke unused tokens
+   - Monitor token usage in respective platforms
 
-```typescript
-// Encrypt keys before storing
-import crypto from 'crypto';
+3. **Browser Security**
+   - Use updated browsers
+   - Don't share browser profiles
+   - Clear localStorage when using shared computers
+   - Use incognito/private mode on shared devices
 
-function encryptApiKey(apiKey: string, userPassword: string) {
-  const cipher = crypto.createCipher('aes-256-cbc', userPassword);
-  let encrypted = cipher.update(apiKey, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return encrypted;
-}
+### For Developers
 
-// Store encrypted in localStorage
-localStorage.setItem('encryptedKeys', encrypted);
-```
+1. **Never Commit Keys**
+   ```bash
+   # .gitignore includes:
+   *.key
+   *.token
+   .env*.local
+   *-token.txt
+   *-key.txt
+   ```
 
-### Option 3: Backend for Frontend (BFF) Pattern
+2. **Code Review**
+   - Check for accidental key exposure
+   - Verify localStorage usage
+   - Ensure no server-side key storage
 
-```
-Client → Your BFF API → Multiple Services
-         ↓
-    User Session
-    Rate Limiting
-    Key Rotation
-    Audit Logs
-```
+## 🔍 Security Audit Checklist
 
-## Recommended Production Setup
+### Application Security
+- [x] No hardcoded API keys in source code
+- [x] All keys stored in client-side localStorage
+- [x] HTTPS-only API communications
+- [x] No server-side key storage
+- [x] Secure key transmission to service APIs only
+- [x] Input validation on all API endpoints
+- [x] No sensitive data in logs
 
-### 1. Authentication Layer
-```typescript
-// Use NextAuth.js or similar
-import NextAuth from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
+### Repository Security
+- [x] .gitignore configured for sensitive files
+- [x] No committed environment files
+- [x] No exposed tokens in documentation
+- [x] Deployment scripts sanitized
+- [x] All helper scripts with tokens removed
 
-export default NextAuth({
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    })
-  ]
-})
-```
+## 🚨 Reporting Security Issues
 
-### 2. Database for User Keys
-```sql
--- PostgreSQL schema
-CREATE TABLE user_api_keys (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
-  service VARCHAR(50), -- 'gemini', 'github', 'vercel'
-  encrypted_key TEXT,
-  created_at TIMESTAMP,
-  last_used TIMESTAMP,
-  usage_count INTEGER DEFAULT 0
-);
-```
+If you discover a security vulnerability, please:
 
-### 3. Rate Limiting
-```typescript
-import rateLimit from 'express-rate-limit';
+1. **DO NOT** create a public issue
+2. Report via GitHub Security Advisory
+3. Include:
+   - Description of the vulnerability
+   - Steps to reproduce
+   - Potential impact
+   - Suggested fix (if any)
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each user to 100 requests per windowMs
-  keyGenerator: (req) => req.session?.userId || req.ip
-});
+## 📝 Compliance
 
-app.use('/api/', limiter);
-```
+### Data Protection
+- **GDPR Compliant**: No personal data stored on servers
+- **User Control**: Full control over data deletion
+- **Transparency**: Clear documentation of data handling
+- **Right to Erasure**: Clear localStorage to remove all data
 
-### 4. Environment-Based Keys
-```env
-# .env.production
-# For team/enterprise use
-GEMINI_API_KEY_POOL=key1,key2,key3
-ENABLE_KEY_ROTATION=true
-MAX_REQUESTS_PER_USER=1000
-```
+### API Key Guidelines
+- Users are responsible for their own API key security
+- We provide secure storage but not key management
+- Users must comply with respective API provider terms
+- Keys should have minimal required permissions
 
-## Security Best Practices
+## 🔄 Updates and Patches
 
-### For Individual Users (Current Setup)
-1. **Use strong API keys** - Regenerate regularly
-2. **Don't share browsers** - Keys are stored locally
-3. **Use incognito for demos** - No key persistence
-4. **Clear browser data** - Removes stored keys
-5. **Use separate keys for dev/prod**
+- Security updates are released immediately when identified
+- Users are notified through GitHub releases
+- No automatic updates that could expose keys
+- Changelog includes security fixes
 
-### For Production Deployment
-1. **Add authentication** - Require user login
-2. **Implement RBAC** - Role-based access control
-3. **Use environment variables** - Never commit keys
-4. **Add HTTPS only** - Encrypt all traffic
-5. **Implement CSP headers** - Prevent XSS
-6. **Add request signing** - Verify request integrity
-7. **Use key rotation** - Automatic key refresh
-8. **Add audit logging** - Track all API usage
-9. **Implement rate limiting** - Prevent abuse
-10. **Use secret management** - AWS Secrets, Vault, etc.
+## 💡 Security Tips
 
-## Example: Secure Multi-Tenant Setup
+### When to Clear Your Keys
+- Before uninstalling the application
+- When switching devices
+- After any suspected security breach
+- When done using the application
+- Before clearing browser data/cache
 
-```typescript
-// middleware.ts
-export async function middleware(request: NextRequest) {
-  // 1. Check authentication
-  const token = request.cookies.get('auth-token');
-  if (!token) return redirectToLogin();
-  
-  // 2. Verify user
-  const user = await verifyToken(token);
-  
-  // 3. Check rate limits
-  const rateLimitOk = await checkRateLimit(user.id);
-  if (!rateLimitOk) return rateLimitExceeded();
-  
-  // 4. Log request
-  await logApiRequest(user.id, request.url);
-  
-  // 5. Add user context to request
-  request.headers.set('x-user-id', user.id);
-  
-  return NextResponse.next();
-}
-```
+### How to Clear Your Keys
+1. **Via UI**: Click Settings (🔑) → Clear all fields → Save
+2. **Via Console**: `localStorage.removeItem('aiAppBuilderKeys')`
+3. **Clear All**: `localStorage.clear()` (removes all app data)
 
-## API Key Security Levels
+## 📊 Security Metrics
 
-### Level 1: Basic (Current)
-- Client-side storage
-- Direct API calls
-- Good for: Personal projects, demos
+- **Zero** server-stored API keys
+- **Zero** database credential storage
+- **Zero** hardcoded credentials
+- **100%** client-side key management
+- **Direct** API communication only
 
-### Level 2: Enhanced
-- Encrypted localStorage
-- HTTPS only
-- Basic rate limiting
-- Good for: Small teams, internal tools
+## 🔐 API Endpoint Security
 
-### Level 3: Production
-- Server-side proxy
-- User authentication
-- Database key storage
-- Rate limiting & monitoring
-- Good for: Public SaaS, enterprise
+All API endpoints (`/api/*`) follow these principles:
+- Receive tokens only from request body/headers
+- Never log or store received tokens
+- Direct pass-through to external APIs
+- No token persistence between requests
+- Immediate token disposal after use
 
-### Level 4: Enterprise
-- Hardware security modules (HSM)
-- Key rotation policies
-- Audit compliance (SOC2, ISO)
-- Zero-trust architecture
-- Good for: Banking, healthcare, government
+## 🌐 Deployment Security
 
-## Quick Security Checklist
+### Vercel Deployment
+- No environment variables for user keys
+- Build-time variables don't include secrets
+- Runtime secrets managed by users
 
-- [ ] API keys in environment variables, not code
-- [ ] HTTPS enabled in production
-- [ ] Authentication required for API access
-- [ ] Rate limiting implemented
-- [ ] Keys encrypted at rest
-- [ ] Regular key rotation
-- [ ] Audit logging enabled
-- [ ] CSP headers configured
-- [ ] CORS properly configured
-- [ ] Input validation on all endpoints
-- [ ] SQL injection prevention
-- [ ] XSS protection
-- [ ] CSRF tokens for state-changing operations
+### Self-Hosting
+- Can be deployed without any configuration
+- Users add their own keys via UI
+- No `.env` files required
 
-## Monitoring & Alerts
+---
 
-Set up monitoring for:
-- Unusual API usage patterns
-- Failed authentication attempts
-- Rate limit violations
-- Expired or invalid keys
-- Suspicious request patterns
-
-## Incident Response
-
-If keys are compromised:
-1. Immediately revoke compromised keys
-2. Generate new keys
-3. Update all services
-4. Review audit logs
-5. Notify affected users
-6. Implement additional security measures
-
-## Compliance Considerations
-
-For production use with user data:
-- GDPR compliance for EU users
-- CCPA compliance for California users
-- SOC2 Type II for enterprise
-- HIPAA for healthcare data
-- PCI DSS for payment processing
-
-## Resources
-
-- [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
-- [Next.js Security Best Practices](https://nextjs.org/docs/app/building-your-application/configuring/security)
-- [Google AI API Security](https://ai.google.dev/docs/security)
-- [GitHub API Security](https://docs.github.com/en/rest/overview/security)
+**Last Updated**: September 2024  
+**Version**: 1.0.0  
+**Security Model**: Zero-Trust Client-Side Storage

@@ -27,6 +27,9 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.development.local
+.env.test.local
+.env.production.local
 
 # vercel
 .vercel
@@ -34,3 +37,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# deployment scripts (may contain tokens)
+deploy-to-vercel.js
+vercel-deploy.sh
+push-to-github.sh
+PUSH_NOW.txt
+GITHUB_PUSH.md
+
+# API keys and tokens
+*.key
+*.token
+*-token.txt
+*-key.txt

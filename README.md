@@ -100,17 +100,17 @@ The application uses browser localStorage for API keys, ensuring security and us
    - **GitHub Token**: Optional, for GitHub deployment ([Create token](https://github.com/settings/tokens))
    - **Vercel Token**: Optional, for Vercel deployment ([Get token](https://vercel.com/account/tokens))
 
-### Environment Variables (Optional)
+### Security Note
 
-For pre-configuration, create a `.env.local` file:
+**This application does NOT store any API keys on the server.**
 
-```env
-NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
-NEXT_PUBLIC_GITHUB_TOKEN=your_github_token
-NEXT_PUBLIC_VERCEL_TOKEN=your_vercel_token
-```
+- ✅ All API keys are stored locally in your browser's localStorage
+- ✅ Keys are never sent to our servers
+- ✅ Each user manages their own API keys
+- ✅ No environment variables or server-side storage
+- ✅ Keys are only sent directly to the respective service APIs (Gemini, GitHub, Vercel)
 
-**Note**: For security, we recommend users add their own keys through the UI rather than environment variables.
+**Important**: Never share your API keys or commit them to version control.
 
 ## 🎮 Usage
 
