@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Octokit } from '@octokit/rest';
 
+export const dynamic = 'force-dynamic';
+
 // Extract repo info from GitHub URL
 function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
   const patterns = [
