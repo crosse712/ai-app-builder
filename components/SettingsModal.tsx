@@ -14,7 +14,7 @@ interface SettingsModalProps {
 
 export interface ApiKeys {
   geminiApiKey: string;
-  claudeApiKey: string;
+  claudeApiKey: string; // Kept for backward compatibility but not used (server-side now)
   selectedModel: 'gemini' | 'claude';
   githubToken: string;
   vercelToken: string;
@@ -41,13 +41,10 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
       toast.error('Gemini API key is required for code generation');
       return;
     }
-    if (keys.selectedModel === 'claude' && !keys.claudeApiKey.trim()) {
-      toast.error('Claude API key is required for code generation');
-      return;
-    }
+    // Claude uses server-side API key, no validation needed
 
     onSave(keys);
-    toast.success('API keys saved successfully');
+    toast.success('Settings saved successfully');
     onClose();
   };
 
@@ -99,7 +96,7 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
               >
                 <div className="text-left">
                   <div className="font-semibold text-white mb-1">Anthropic Claude</div>
-                  <div className="text-xs text-gray-400">Claude 3.5 Sonnet</div>
+                  <div className="text-xs text-gray-400">Sonnet 4.5 (Server-side)</div>
                 </div>
               </button>
             </div>
@@ -160,42 +157,23 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
           </div>
           )}
 
-          {/* Claude API Key */}
+          {/* Claude Info */}
           {keys.selectedModel === 'claude' && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-300">
-                Anthropic Claude API Key <span className="text-purple-400">(Required)</span>
-              </label>
-              <a
-                href="https://console.anthropic.com/settings/keys"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-purple-400 hover:text-purple-300 flex items-center space-x-1"
-              >
-                <span>Get API Key</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+          <div className="space-y-2 bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+            <div className="flex items-start space-x-3">
+              <div className="text-purple-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-white mb-1">Claude Sonnet 4.5 Ready</h4>
+                <p className="text-xs text-gray-300">
+                  Using server-side API key. No additional setup required!
+                  Claude Sonnet 4.5 is Anthropic's latest and most advanced coding model.
+                </p>
+              </div>
             </div>
-            <div className="relative">
-              <input
-                type={showKeys.claude ? 'text' : 'password'}
-                value={keys.claudeApiKey}
-                onChange={(e) => setKeys({ ...keys, claudeApiKey: e.target.value })}
-                placeholder="sk-ant-..."
-                className="w-full px-4 py-2 pr-10 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none font-mono text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setShowKeys({ ...showKeys, claude: !showKeys.claude })}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-              >
-                {showKeys.claude ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            <p className="text-xs text-gray-400">
-              Powered by Anthropic's Claude 3.5 Sonnet - Advanced AI model with excellent coding capabilities and reasoning.
-            </p>
           </div>
           )}
 

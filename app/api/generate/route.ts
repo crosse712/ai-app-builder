@@ -306,16 +306,21 @@ function extractTechStack(prompt: string): string {
 async function generateWithAI(
   prompt: string,
   selectedModel: 'gemini' | 'claude',
-  apiKey: string,
-  claudeApiKey: string
+  geminiApiKey: string
 ): Promise<string> {
   if (selectedModel === 'claude') {
+    // Use server-side Claude API key from environment variable
+    const claudeApiKey = process.env.CLAUDE_API_KEY;
+    if (!claudeApiKey) {
+      throw new Error('Claude API key not configured on server');
+    }
+
     const anthropic = new Anthropic({
       apiKey: claudeApiKey,
     });
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-5',
       max_tokens: 8192,
       messages: [
         {
@@ -330,7 +335,7 @@ async function generateWithAI(
     return textContent && 'text' in textContent ? textContent.text : '';
   } else {
     // Gemini
-    const genAI = new GoogleGenerativeAI(apiKey);
+    const genAI = new GoogleGenerativeAI(geminiApiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
     const result = await model.generateContent(prompt);
     return result.response.text();
@@ -462,7 +467,10 @@ async function analyzeRequestIntent(prompt: string, apiKey: string, projectConte
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { prompt, apiKey, claudeApiKey, selectedModel = 'gemini', githubToken, commentLevel, projectContext, conversationHistory, currentCode } = body;
+    const { prompt, apiKey, claudeApiKey, selectedModel = 'claude', githubToken, commentLevel, projectContext, conversationHistory, currentCode } = body;
+
+    // Get Claude API key from environment variable (server-side)
+    const serverClaudeKey = process.env.CLAUDE_API_KEY;
 
     // Validate API key based on selected model
     if (selectedModel === 'gemini' && (!apiKey || apiKey === 'test-key')) {
@@ -472,10 +480,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (selectedModel === 'claude' && !claudeApiKey) {
+    if (selectedModel === 'claude' && !serverClaudeKey) {
       return NextResponse.json(
-        { error: 'Claude API key is required. Please add it in Settings.' },
-        { status: 400 }
+        { error: 'Claude API is not configured on the server. Please contact the administrator.' },
+        { status: 500 }
       );
     }
 
@@ -584,7 +592,7 @@ export async function POST(req: NextRequest) {
       
       Generate the COMPLETE HTML code that EXACTLY replicates the website.`;
 
-      const rawCode = await generateWithAI(replicationPrompt, selectedModel, apiKey, claudeApiKey);
+      const rawCode = await generateWithAI(replicationPrompt, selectedModel, apiKey);
       
       // Use the cleaning function to extract only HTML
       const generatedCode = cleanGeneratedCode(rawCode);
@@ -661,7 +669,7 @@ export async function POST(req: NextRequest) {
 
       If they're asking about the current project, reference it by name and acknowledge what you're building together.`;
 
-      const text = await generateWithAI(conversationPrompt, selectedModel, apiKey, claudeApiKey);
+      const text = await generateWithAI(conversationPrompt, selectedModel, apiKey);
       
       return NextResponse.json({ 
         response: text,
@@ -1702,7 +1710,7 @@ export async function POST(req: NextRequest) {
     
     const fullPrompt = `${enhancedSystemPrompt}\n\nUser request: ${contextualPrompt}`;
 
-    const rawText = await generateWithAI(fullPrompt, selectedModel, apiKey, claudeApiKey);
+    const rawText = await generateWithAI(fullPrompt, selectedModel, apiKey);
     
     // Use the cleaning function to extract only HTML
     const cleanedCode = cleanGeneratedCode(rawText);

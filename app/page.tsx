@@ -146,7 +146,7 @@ export default function Home() {
   const [apiKeys, setApiKeys] = useState<ApiKeys>({
     geminiApiKey: '',
     claudeApiKey: '',
-    selectedModel: 'gemini',
+    selectedModel: 'claude',
     githubToken: '',
     vercelToken: '',
   });
@@ -167,7 +167,15 @@ export default function Home() {
     const savedKeys = localStorage.getItem('aiAppBuilderKeys');
     if (savedKeys) {
       try {
-        setApiKeys(JSON.parse(savedKeys));
+        const parsed = JSON.parse(savedKeys);
+        // Merge with defaults to ensure new fields exist
+        setApiKeys({
+          geminiApiKey: parsed.geminiApiKey || '',
+          claudeApiKey: parsed.claudeApiKey || '',
+          selectedModel: parsed.selectedModel || 'claude',
+          githubToken: parsed.githubToken || '',
+          vercelToken: parsed.vercelToken || '',
+        });
       } catch (error) {
         console.error('Failed to load saved API keys');
       }

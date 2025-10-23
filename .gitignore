@@ -49,4 +49,4 @@ GITHUB_PUSH.md
 *.key
 *.token
 *-token.txt
-*-key.txt
+*-key.txt.env.local
