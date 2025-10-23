@@ -95,7 +95,7 @@ function isWebsiteReplicationCommand(prompt: string): boolean {
   const hasReplicationKeyword = replicationKeywords.some(keyword => promptLower.includes(keyword));
   
   // If URL is present and either has replication keyword or just the URL alone
-  return hasUrl && (hasReplicationKeyword || prompt.trim().match(/^(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/[^\s]*)?$/));
+  return hasUrl && (hasReplicationKeyword || !!prompt.trim().match(/^(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?:\/[^\s]*)?$/));
 }
 
 // Check if prompt is asking to load a previous project or contains GitHub URL

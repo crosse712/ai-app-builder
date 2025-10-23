@@ -11,7 +11,7 @@ interface Framework {
   description: string;
   howToUse: string;
   examplePrompt: string;
-  promptExamples: {
+  promptExamples?: {
     title: string;
     prompt: string;
     description: string;

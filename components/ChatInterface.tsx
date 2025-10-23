@@ -25,7 +25,7 @@ export interface Message {
   content: string;
   timestamp: Date;
   code?: string;
-  intent?: 'code_generation' | 'code_modification' | 'conversation' | 'explanation';
+  intent?: 'code_generation' | 'code_modification' | 'conversation' | 'explanation' | 'website_replication';
   codeUpdated?: boolean;
 }
 
