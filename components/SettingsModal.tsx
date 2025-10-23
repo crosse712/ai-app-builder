@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Key, Save, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { X, Key, Save, Eye, EyeOff, ExternalLink, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ApiKeyHelper from './ApiKeyHelper';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
     github: false,
     vercel: false,
   });
+  const [showApiHelper, setShowApiHelper] = useState(false);
 
   useEffect(() => {
     setKeys(currentKeys);
@@ -65,15 +67,25 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
               <label className="text-sm font-medium text-gray-300">
                 Google Gemini API Key <span className="text-purple-400">(Required)</span>
               </label>
-              <a
-                href="https://makersuite.google.com/app/apikey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-purple-400 hover:text-purple-300 flex items-center space-x-1"
-              >
-                <span>Get API Key</span>
-                <ExternalLink className="w-3 h-3" />
-              </a>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowApiHelper(!showApiHelper)}
+                  className="text-xs text-blue-400 hover:text-blue-300 flex items-center space-x-1"
+                >
+                  <Info className="w-3 h-3" />
+                  <span>How to get key</span>
+                </button>
+                <a
+                  href="https://aistudio.google.com/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-purple-400 hover:text-purple-300 flex items-center space-x-1"
+                >
+                  <span>Get API Key</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
             </div>
             <div className="relative">
               <input
@@ -94,6 +106,12 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
             <p className="text-xs text-gray-400">
               Powered by Google's Gemini 2.0 Flash (Experimental) - Latest and most capable model for code generation. Free tier available.
             </p>
+            
+            {showApiHelper && (
+              <div className="mt-3">
+                <ApiKeyHelper compact onClose={() => setShowApiHelper(false)} />
+              </div>
+            )}
           </div>
 
           {/* GitHub Token */}

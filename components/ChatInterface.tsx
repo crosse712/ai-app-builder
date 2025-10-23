@@ -176,7 +176,31 @@ export default function ChatInterface({
       
       let assistantMessage: Message;
       
-      if (response?.isConversation) {
+      // Handle error responses
+      if (response?.error) {
+        assistantMessage = {
+          id: generateId(),
+          role: 'assistant',
+          content: `❌ Error: ${response.error}`,
+          timestamp: new Date()
+        };
+      } else if (response?.intent === 'website_replication') {
+        // Website replication successful
+        assistantMessage = {
+          id: generateId(),
+          role: 'assistant',
+          content: `🎨 Successfully replicated the design from ${response.sourceUrl}! The code has been generated using ${response.message?.includes('using') ? response.message.split('using ')[1] : 'your preferred framework'}. Check the editor and live preview to see the replicated website.`,
+          timestamp: new Date(),
+          intent: 'website_replication',
+          codeUpdated: true,
+          code: response.code
+        };
+        
+        // Update the code in the editor
+        if (onCodeUpdate && response.code) {
+          onCodeUpdate(response.code);
+        }
+      } else if (response?.isConversation) {
         // It's just a conversation, not code generation
         assistantMessage = {
           id: generateId(),

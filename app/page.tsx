@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { 
-  Sparkles, 
-  Code2, 
-  Eye, 
-  Github, 
+  Sparkles,
+  Code2,
+  Eye,
+  Github,
   Rocket,
   Settings,
   Download,
@@ -37,7 +37,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   PanelRightClose,
-  PanelRightOpen
+  PanelRightOpen,
+  Library
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import EnhancedDeploymentDialog from '@/components/EnhancedDeploymentDialog';
@@ -47,6 +48,7 @@ import WelcomeGuide from '@/components/WelcomeGuide';
 import SimpleLearningPanel from '@/components/SimpleLearningPanel';
 import ChatInterface, { Message } from '@/components/ChatInterface';
 import TutorialsModal from '@/components/TutorialsModal';
+import FrameworksDocumentation from '@/components/FrameworksDocumentation';
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
@@ -139,6 +141,7 @@ export default function Home() {
   const [projectSelectorOpen, setProjectSelectorOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [tutorialsOpen, setTutorialsOpen] = useState(false);
+  const [frameworksDocOpen, setFrameworksDocOpen] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [apiKeys, setApiKeys] = useState<ApiKeys>({
     geminiApiKey: '',
@@ -154,6 +157,7 @@ export default function Home() {
   });
   const [projectName, setProjectName] = useState('My Project');
   const [showChatInterface, setShowChatInterface] = useState(true);
+  const [urlToReplicate, setUrlToReplicate] = useState('');
 
   // Load API keys and saved code from localStorage on mount
   useEffect(() => {
@@ -295,6 +299,17 @@ export default function Home() {
 
       const data = await response.json();
       
+      // Handle errors first
+      if (!response.ok) {
+        if (data.error) {
+          toast.error(data.error);
+          if (data.error.includes('API key')) {
+            setSettingsOpen(true);
+          }
+        }
+        return data; // Return error for chat interface
+      }
+      
       // Handle special project loading actions
       if (data.action === 'list_projects') {
         setProjectSelectorOpen(true);
@@ -360,6 +375,29 @@ export default function Home() {
         }
         
         return data; // Return the full response for chat interface
+      }
+      
+      // Additional validation for generated code
+      if (data && data.code && typeof data.code === 'string') {
+        // Ensure the code is clean HTML
+        let validatedCode = data.code.trim();
+        
+        // If code doesn't start with DOCTYPE, check if it's wrapped in extra text
+        if (!validatedCode.startsWith('<!DOCTYPE')) {
+          const htmlStart = validatedCode.indexOf('<!DOCTYPE');
+          if (htmlStart > 0) {
+            validatedCode = validatedCode.substring(htmlStart);
+          }
+        }
+        
+        // Remove any trailing non-HTML content
+        const htmlEnd = validatedCode.lastIndexOf('</html>');
+        if (htmlEnd > 0 && htmlEnd < validatedCode.length - 7) {
+          validatedCode = validatedCode.substring(0, htmlEnd + 7);
+        }
+        
+        // Store the validated code
+        data.code = validatedCode;
       }
       
       return data; // Return any response
@@ -572,7 +610,16 @@ export default function Home() {
               <BookOpen className="w-4 h-4" />
               <span className="text-sm">Tutorials</span>
             </button>
-            
+
+            <button
+              onClick={() => setFrameworksDocOpen(true)}
+              className="flex items-center space-x-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+              title="View available UI frameworks"
+            >
+              <Library className="w-4 h-4" />
+              <span className="text-sm">Frameworks</span>
+            </button>
+
             <button
               onClick={resetProject}
               className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-700 rounded-lg transition-colors"
@@ -783,29 +830,171 @@ export default function Home() {
                       )}
                     </div>
                     
+                    {/* URL Replication */}
+                    <div className="mb-4 p-3 bg-gradient-to-r from-indigo-900/20 to-purple-900/20 rounded-lg border border-indigo-600/30">
+                      <p className="text-xs text-indigo-300 mb-2 font-medium">🔗 Clone Any Website:</p>
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          value={urlToReplicate}
+                          onChange={(e) => setUrlToReplicate(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              setPrompt(`Replicate ${urlToReplicate} with ${commentLevel === 'simple' ? 'React' : 'Tailwind CSS'}`);
+                              generateCode();
+                              setUrlToReplicate('');
+                            }
+                          }}
+                          placeholder="Enter URL (e.g., stripe.com)"
+                          className="flex-1 px-2 py-1 bg-gray-800 text-white text-xs rounded border border-gray-600 focus:border-indigo-500 focus:outline-none placeholder-gray-500"
+                        />
+                        <button
+                          onClick={() => {
+                            if (urlToReplicate) {
+                              setPrompt(`Replicate ${urlToReplicate} with React`);
+                              generateCode();
+                              setUrlToReplicate('');
+                            }
+                          }}
+                          className="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded transition-colors"
+                        >
+                          Clone
+                        </button>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        <span className="text-xs text-gray-500">Examples:</span>
+                        {['stripe.com', 'vercel.com', 'linear.app'].map((site) => (
+                          <button
+                            key={site}
+                            onClick={() => {
+                              setPrompt(`Replicate ${site} with Tailwind CSS`);
+                              generateCode();
+                            }}
+                            className="px-2 py-0.5 text-xs bg-gray-700/50 hover:bg-gray-600/50 text-indigo-300 rounded transition-colors"
+                          >
+                            {site}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* Quick prompts */}
                     <div className="mb-4">
                       <p className="text-xs text-gray-500 mb-2">Quick Actions:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { label: 'Todo App', tech: 'React and Tailwind CSS' },
-                          { label: 'Vite Dashboard', tech: 'Vite, React and TypeScript' },
-                          { label: 'Portfolio', tech: 'modern React with Vite' },
-                          { label: 'Calculator', tech: 'React and Tailwind CSS' },
-                          { label: 'Chat UI', tech: 'React with real-time features' }
-                        ].map((quickPrompt) => (
-                          <button
-                            key={quickPrompt.label}
-                            onClick={() => {
-                              setPrompt(`Create a modern ${quickPrompt.label.toLowerCase()} with ${quickPrompt.tech}`);
-                              generateCode();
-                            }}
-                            className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
-                            title={`Build with ${quickPrompt.tech}`}
-                          >
-                            {quickPrompt.label}
-                          </button>
-                        ))}
+                      <div className="space-y-2">
+                        {/* React Apps */}
+                        <div>
+                          <p className="text-xs text-gray-600 mb-1">React (Vite):</p>
+                          <div className="flex flex-wrap gap-1">
+                            {[
+                              'Todo App',
+                              'Dashboard',
+                              'Portfolio',
+                              'E-commerce'
+                            ].map((app) => (
+                              <button
+                                key={`react-${app}`}
+                                onClick={() => {
+                                  setPrompt(`Create a ${app.toLowerCase()} with React (Vite setup) and Tailwind CSS`);
+                                  generateCode();
+                                }}
+                                className="px-2 py-1 text-xs bg-blue-900 hover:bg-blue-800 text-blue-200 rounded transition-colors"
+                              >
+                                {app}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Vue Apps */}
+                        <div>
+                          <p className="text-xs text-gray-600 mb-1">Vue 3:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {[
+                              'Admin Panel',
+                              'Blog',
+                              'Weather App'
+                            ].map((app) => (
+                              <button
+                                key={`vue-${app}`}
+                                onClick={() => {
+                                  setPrompt(`Create a ${app.toLowerCase()} with Vue 3 Composition API and Tailwind CSS`);
+                                  generateCode();
+                                }}
+                                className="px-2 py-1 text-xs bg-green-900 hover:bg-green-800 text-green-200 rounded transition-colors"
+                              >
+                                {app}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Tailwind CSS */}
+                        <div>
+                          <p className="text-xs text-gray-600 mb-1">Tailwind CSS:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {[
+                              'Landing Page',
+                              'Pricing Table',
+                              'Component Library',
+                              'Admin UI'
+                            ].map((app) => (
+                              <button
+                                key={`tailwind-${app}`}
+                                onClick={() => {
+                                  setPrompt(`Create a ${app.toLowerCase()} with pure Tailwind CSS only (no JavaScript framework)`);
+                                  generateCode();
+                                }}
+                                className="px-2 py-1 text-xs bg-cyan-900 hover:bg-cyan-800 text-cyan-200 rounded transition-colors"
+                              >
+                                {app}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Other Frameworks */}
+                        <div>
+                          <p className="text-xs text-gray-600 mb-1">More Frameworks:</p>
+                          <div className="flex flex-wrap gap-1">
+                            <button
+                              onClick={() => {
+                                setPrompt(`Create a landing page with Next.js 14 App Router`);
+                                generateCode();
+                              }}
+                              className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors"
+                            >
+                              Next.js
+                            </button>
+                            <button
+                              onClick={() => {
+                                setPrompt(`Create a SPA with Svelte and Tailwind`);
+                                generateCode();
+                              }}
+                              className="px-2 py-1 text-xs bg-orange-900 hover:bg-orange-800 text-orange-200 rounded transition-colors"
+                            >
+                              Svelte
+                            </button>
+                            <button
+                              onClick={() => {
+                                setPrompt(`Create a calculator with vanilla HTML, CSS, and JavaScript`);
+                                generateCode();
+                              }}
+                              className="px-2 py-1 text-xs bg-purple-900 hover:bg-purple-800 text-purple-200 rounded transition-colors"
+                            >
+                              Vanilla JS
+                            </button>
+                            <button
+                              onClick={() => {
+                                setPrompt(`Create Tailwind UI components with advanced animations and Alpine.js`);
+                                generateCode();
+                              }}
+                              className="px-2 py-1 text-xs bg-teal-900 hover:bg-teal-800 text-teal-200 rounded transition-colors"
+                            >
+                              Tailwind UI
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -989,6 +1178,13 @@ export default function Home() {
         onClose={() => setTutorialsOpen(false)}
         onSelectTutorial={handleTutorialSelect}
       />
+
+      {/* Frameworks Documentation */}
+      {frameworksDocOpen && (
+        <FrameworksDocumentation
+          onClose={() => setFrameworksDocOpen(false)}
+        />
+      )}
     </div>
   );
 }
