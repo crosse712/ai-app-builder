@@ -14,6 +14,8 @@ interface SettingsModalProps {
 
 export interface ApiKeys {
   geminiApiKey: string;
+  claudeApiKey: string;
+  selectedModel: 'gemini' | 'claude';
   githubToken: string;
   vercelToken: string;
 }
@@ -22,6 +24,7 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
   const [keys, setKeys] = useState<ApiKeys>(currentKeys);
   const [showKeys, setShowKeys] = useState({
     gemini: false,
+    claude: false,
     github: false,
     vercel: false,
   });
@@ -34,11 +37,15 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
   if (!isOpen) return null;
 
   const handleSave = () => {
-    if (!keys.geminiApiKey.trim()) {
+    if (keys.selectedModel === 'gemini' && !keys.geminiApiKey.trim()) {
       toast.error('Gemini API key is required for code generation');
       return;
     }
-    
+    if (keys.selectedModel === 'claude' && !keys.claudeApiKey.trim()) {
+      toast.error('Claude API key is required for code generation');
+      return;
+    }
+
     onSave(keys);
     toast.success('API keys saved successfully');
     onClose();
@@ -61,7 +68,45 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
         </div>
 
         <div className="p-6 space-y-6">
+          {/* AI Model Selector */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-300">
+              AI Coding Assistant
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setKeys({ ...keys, selectedModel: 'gemini' })}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  keys.selectedModel === 'gemini'
+                    ? 'border-purple-500 bg-purple-500/10'
+                    : 'border-gray-600 bg-gray-700 hover:border-gray-500'
+                }`}
+              >
+                <div className="text-left">
+                  <div className="font-semibold text-white mb-1">Google Gemini</div>
+                  <div className="text-xs text-gray-400">Gemini 2.0 Flash (Experimental)</div>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setKeys({ ...keys, selectedModel: 'claude' })}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  keys.selectedModel === 'claude'
+                    ? 'border-purple-500 bg-purple-500/10'
+                    : 'border-gray-600 bg-gray-700 hover:border-gray-500'
+                }`}
+              >
+                <div className="text-left">
+                  <div className="font-semibold text-white mb-1">Anthropic Claude</div>
+                  <div className="text-xs text-gray-400">Claude 3.5 Sonnet</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
           {/* Gemini API Key */}
+          {keys.selectedModel === 'gemini' && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-300">
@@ -113,6 +158,46 @@ export default function SettingsModal({ isOpen, onClose, onSave, currentKeys }: 
               </div>
             )}
           </div>
+          )}
+
+          {/* Claude API Key */}
+          {keys.selectedModel === 'claude' && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-300">
+                Anthropic Claude API Key <span className="text-purple-400">(Required)</span>
+              </label>
+              <a
+                href="https://console.anthropic.com/settings/keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-purple-400 hover:text-purple-300 flex items-center space-x-1"
+              >
+                <span>Get API Key</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <div className="relative">
+              <input
+                type={showKeys.claude ? 'text' : 'password'}
+                value={keys.claudeApiKey}
+                onChange={(e) => setKeys({ ...keys, claudeApiKey: e.target.value })}
+                placeholder="sk-ant-..."
+                className="w-full px-4 py-2 pr-10 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-purple-500 focus:outline-none font-mono text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => setShowKeys({ ...showKeys, claude: !showKeys.claude })}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                {showKeys.claude ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            <p className="text-xs text-gray-400">
+              Powered by Anthropic's Claude 3.5 Sonnet - Advanced AI model with excellent coding capabilities and reasoning.
+            </p>
+          </div>
+          )}
 
           {/* GitHub Token */}
           <div className="space-y-2">

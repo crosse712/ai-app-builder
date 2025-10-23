@@ -145,6 +145,8 @@ export default function Home() {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [apiKeys, setApiKeys] = useState<ApiKeys>({
     geminiApiKey: '',
+    claudeApiKey: '',
+    selectedModel: 'gemini',
     githubToken: '',
     vercelToken: '',
   });
@@ -286,9 +288,11 @@ export default function Home() {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           prompt: contextPrompt,
           apiKey,
+          claudeApiKey: apiKeys.claudeApiKey,
+          selectedModel: apiKeys.selectedModel,
           githubToken: apiKeys.githubToken,
           commentLevel,
           projectContext: projectName,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import Anthropic from '@anthropic-ai/sdk';
 
 // Clean and extract only valid HTML from AI response
 function cleanGeneratedCode(text: string): string {
@@ -301,6 +302,41 @@ function extractTechStack(prompt: string): string {
   return 'vite-react';
 }
 
+// Universal AI generation function that works with both Gemini and Claude
+async function generateWithAI(
+  prompt: string,
+  selectedModel: 'gemini' | 'claude',
+  apiKey: string,
+  claudeApiKey: string
+): Promise<string> {
+  if (selectedModel === 'claude') {
+    const anthropic = new Anthropic({
+      apiKey: claudeApiKey,
+    });
+
+    const message = await anthropic.messages.create({
+      model: 'claude-3-5-sonnet-20241022',
+      max_tokens: 8192,
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+    });
+
+    // Extract text from Claude's response
+    const textContent = message.content.find(block => block.type === 'text');
+    return textContent && 'text' in textContent ? textContent.text : '';
+  } else {
+    // Gemini
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  }
+}
+
 // Extract project name from natural language
 async function extractProjectInfo(prompt: string, apiKey: string): Promise<{ projectName?: string, listProjects?: boolean, githubUrl?: string }> {
   // First check if it's a GitHub URL
@@ -426,11 +462,19 @@ async function analyzeRequestIntent(prompt: string, apiKey: string, projectConte
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { prompt, apiKey, githubToken, commentLevel, projectContext, conversationHistory, currentCode } = body;
+    const { prompt, apiKey, claudeApiKey, selectedModel = 'gemini', githubToken, commentLevel, projectContext, conversationHistory, currentCode } = body;
 
-    if (!apiKey || apiKey === 'test-key') {
+    // Validate API key based on selected model
+    if (selectedModel === 'gemini' && (!apiKey || apiKey === 'test-key')) {
       return NextResponse.json(
         { error: 'Google AI API key is required. Please add it in Settings.' },
+        { status: 400 }
+      );
+    }
+
+    if (selectedModel === 'claude' && !claudeApiKey) {
+      return NextResponse.json(
+        { error: 'Claude API key is required. Please add it in Settings.' },
         { status: 400 }
       );
     }
@@ -445,9 +489,6 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-      
       // Extract the preferred tech stack from prompt
       const techStack = extractTechStack(prompt);
       
@@ -542,10 +583,8 @@ export async function POST(req: NextRequest) {
       Someone viewing both should say "These are the same design!"
       
       Generate the COMPLETE HTML code that EXACTLY replicates the website.`;
-      
-      const result = await model.generateContent(replicationPrompt);
-      const response = await result.response;
-      const rawCode = response.text();
+
+      const rawCode = await generateWithAI(replicationPrompt, selectedModel, apiKey, claudeApiKey);
       
       // Use the cleaning function to extract only HTML
       const generatedCode = cleanGeneratedCode(rawCode);
@@ -600,9 +639,6 @@ export async function POST(req: NextRequest) {
     // Analyze the intent of the request
     const intentAnalysis = await analyzeRequestIntent(prompt, apiKey, projectContext);
     
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-    
     // For code modifications, ensure we have the current code context
     if (intentAnalysis.intent === 'code_modification' && !currentCode) {
       // Request current code from frontend if not provided
@@ -621,13 +657,11 @@ export async function POST(req: NextRequest) {
       User message: ${prompt}
       
       Provide a helpful, friendly response. If they're asking for an explanation, be clear and educational.
-      Keep your response concise but informative. Do NOT generate code unless specifically asked.
-      
+      Keep your response concise but informative. DO NOT generate code unless specifically asked.
+
       If they're asking about the current project, reference it by name and acknowledge what you're building together.`;
-      
-      const result = await model.generateContent(conversationPrompt);
-      const response = await result.response;
-      const text = response.text();
+
+      const text = await generateWithAI(conversationPrompt, selectedModel, apiKey, claudeApiKey);
       
       return NextResponse.json({ 
         response: text,
@@ -1667,10 +1701,8 @@ export async function POST(req: NextRequest) {
     }
     
     const fullPrompt = `${enhancedSystemPrompt}\n\nUser request: ${contextualPrompt}`;
-    
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    const rawText = response.text();
+
+    const rawText = await generateWithAI(fullPrompt, selectedModel, apiKey, claudeApiKey);
     
     // Use the cleaning function to extract only HTML
     const cleanedCode = cleanGeneratedCode(rawText);

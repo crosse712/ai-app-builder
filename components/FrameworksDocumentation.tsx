@@ -331,6 +331,28 @@ const frameworks: Framework[] = [
     description: 'Google\'s Material Design implemented in React. The most popular React UI framework with elevation, ripple effects, and Material Design 3 principles.',
     howToUse: 'Mention "material ui" or "mui" in your prompt.',
     examplePrompt: 'Build an e-commerce site with Material UI',
+    promptExamples: [
+      {
+        title: 'Dashboard with Cards',
+        prompt: 'Create a dashboard using Material UI with elevated cards showing metrics and charts',
+        description: 'Builds a Material Design dashboard with elevation, shadows, and ripple effects on buttons'
+      },
+      {
+        title: 'E-commerce Product List',
+        prompt: 'Build a product catalog with MUI using cards, images, ratings, and add to cart buttons',
+        description: 'Creates a grid of product cards with Material Design styling and interactive elements'
+      },
+      {
+        title: 'User Profile Page',
+        prompt: 'Make a user profile page with Material UI including avatar, tabs for posts and settings',
+        description: 'Generates a profile layout with MUI tabs, buttons, and form controls'
+      },
+      {
+        title: 'Data Table',
+        prompt: 'Create a data table with MUI showing users with sorting, pagination, and action buttons',
+        description: 'Builds an interactive table with Material Design styling and built-in features'
+      }
+    ],
     features: [
       'Material Design 3 components',
       'Elevation system with shadows',
@@ -351,6 +373,28 @@ const frameworks: Framework[] = [
     description: 'Full-featured React components library with 100+ customizable components and hooks.',
     howToUse: 'Mention "mantine" in your prompt.',
     examplePrompt: 'Create a CRM dashboard with Mantine',
+    promptExamples: [
+      {
+        title: 'CRM Dashboard',
+        prompt: 'Build a CRM dashboard with Mantine showing customer stats, charts, and recent activities',
+        description: 'Creates a full-featured dashboard with Mantine components, tables, and data visualization'
+      },
+      {
+        title: 'Form with Validation',
+        prompt: 'Create a multi-step form using Mantine with name, email, password, and date picker',
+        description: 'Builds a complex form with Mantine\'s powerful form management and validation'
+      },
+      {
+        title: 'Admin Panel',
+        prompt: 'Make an admin panel with Mantine including sidebar, notifications, and user management table',
+        description: 'Generates a complete admin interface with Mantine\'s notification system and components'
+      },
+      {
+        title: 'Calendar App',
+        prompt: 'Build a calendar application with Mantine using date pickers and time inputs',
+        description: 'Creates an interactive calendar with Mantine\'s date and time components'
+      }
+    ],
     features: [
       '100+ hooks and components',
       'Powerful form management',
@@ -371,6 +415,28 @@ const frameworks: Framework[] = [
     description: 'Simple, modular, and accessible component library for React. Build accessible web apps with speed.',
     howToUse: 'Mention "chakra" in your prompt.',
     examplePrompt: 'Build a blog platform with Chakra UI',
+    promptExamples: [
+      {
+        title: 'Blog Homepage',
+        prompt: 'Create a blog homepage with Chakra UI showing featured posts, sidebar, and navigation',
+        description: 'Builds a responsive blog layout with Chakra\'s flexible components and teal accents'
+      },
+      {
+        title: 'Landing Page',
+        prompt: 'Build a landing page using Chakra with hero section, features grid, and call-to-action',
+        description: 'Generates a modern landing page with Chakra\'s accessible components and styling'
+      },
+      {
+        title: 'Settings Dashboard',
+        prompt: 'Make a settings page with Chakra UI including dark mode toggle and user preferences',
+        description: 'Creates a settings interface with Chakra\'s built-in dark mode support'
+      },
+      {
+        title: 'Authentication Pages',
+        prompt: 'Build login and signup pages with Chakra UI with form validation and error messages',
+        description: 'Generates accessible auth forms with Chakra\'s form components and style props'
+      }
+    ],
     features: [
       'Accessible components (WAI-ARIA)',
       'Composable and flexible',
@@ -393,6 +459,28 @@ const frameworks: Framework[] = [
     description: 'The world\'s most popular CSS framework. Responsive grid system and pre-built components that work everywhere.',
     howToUse: 'Mention "bootstrap" in your prompt.',
     examplePrompt: 'Create a business website with Bootstrap',
+    promptExamples: [
+      {
+        title: 'Business Website',
+        prompt: 'Build a business homepage with Bootstrap including navbar, hero, services, and contact form',
+        description: 'Creates a professional business site with Bootstrap\'s grid system and components'
+      },
+      {
+        title: 'Restaurant Menu',
+        prompt: 'Create a restaurant menu page using Bootstrap with cards for dishes and categories',
+        description: 'Generates a responsive menu layout with Bootstrap cards and grid'
+      },
+      {
+        title: 'Portfolio Website',
+        prompt: 'Make a portfolio site with Bootstrap showing projects in a grid with modals for details',
+        description: 'Builds a portfolio with Bootstrap\'s modal components and responsive grid'
+      },
+      {
+        title: 'Admin Dashboard',
+        prompt: 'Build an admin dashboard with Bootstrap including sidebar, tables, and alert messages',
+        description: 'Creates a classic admin interface with Bootstrap components and utilities'
+      }
+    ],
     features: [
       'Responsive grid system (12 columns)',
       'Pre-built components',
@@ -413,6 +501,28 @@ const frameworks: Framework[] = [
     description: 'Modern CSS framework based on Flexbox. Pure CSS with no JavaScript, clean and modular.',
     howToUse: 'Mention "bulma" in your prompt.',
     examplePrompt: 'Build a landing page with Bulma',
+    promptExamples: [
+      {
+        title: 'Landing Page',
+        prompt: 'Create a landing page with Bulma including hero section, features boxes, and footer',
+        description: 'Builds a clean landing page with Bulma\'s flexbox-based grid and components'
+      },
+      {
+        title: 'Documentation Site',
+        prompt: 'Build a documentation page using Bulma with sidebar navigation and content sections',
+        description: 'Generates a docs site with Bulma\'s menu component and column layout'
+      },
+      {
+        title: 'Gallery Page',
+        prompt: 'Make an image gallery with Bulma using cards and columns for responsive layout',
+        description: 'Creates a responsive gallery with Bulma\'s card and column components'
+      },
+      {
+        title: 'Contact Page',
+        prompt: 'Build a contact page with Bulma including form fields, map placeholder, and info boxes',
+        description: 'Generates a contact page with Bulma\'s form controls and clean styling'
+      }
+    ],
     features: [
       'Pure CSS (no JavaScript)',
       'Flexbox-based grid',
@@ -435,6 +545,28 @@ const frameworks: Framework[] = [
     description: 'Stunning React components with beautiful animations, 3D effects, and gradient backgrounds. Perfect for eye-catching landing pages.',
     howToUse: 'Mention "aceternity" in your prompt.',
     examplePrompt: 'Create a stunning landing page with Aceternity UI',
+    promptExamples: [
+      {
+        title: 'Animated Landing Page',
+        prompt: 'Build a landing page with Aceternity UI featuring animated gradients, beam effects, and 3D cards',
+        description: 'Creates a stunning dark-themed landing page with Aceternity\'s signature animations'
+      },
+      {
+        title: 'Product Showcase',
+        prompt: 'Create a product showcase using Aceternity with tilt effects, particle backgrounds, and glassmorphism',
+        description: 'Generates an eye-catching product page with 3D transforms and gradient effects'
+      },
+      {
+        title: 'Portfolio Site',
+        prompt: 'Make a portfolio website with Aceternity featuring animated borders and hover effects',
+        description: 'Builds a modern portfolio with Aceternity\'s animated gradients and effects'
+      },
+      {
+        title: 'SaaS Hero Section',
+        prompt: 'Build a SaaS hero section with Aceternity using beam animations and gradient backgrounds',
+        description: 'Creates an impressive hero with Aceternity\'s beam and gradient animations'
+      }
+    ],
     features: [
       'Animated gradients and borders',
       'Particle effects',
@@ -455,6 +587,28 @@ const frameworks: Framework[] = [
     description: 'Beautiful React components with magical animations and vibrant gradients. Make your UI stand out.',
     howToUse: 'Mention "magic ui" or "magicui" in your prompt.',
     examplePrompt: 'Build a creative portfolio with Magic UI',
+    promptExamples: [
+      {
+        title: 'Creative Portfolio',
+        prompt: 'Create a portfolio site with Magic UI using shimmer effects, vibrant gradients, and animated numbers',
+        description: 'Builds a colorful portfolio with Magic UI\'s shimmer and pulse effects'
+      },
+      {
+        title: 'Marketing Landing',
+        prompt: 'Build a marketing page using Magic UI with interactive hover effects and gradient buttons',
+        description: 'Generates an engaging marketing page with Magic UI\'s interactive animations'
+      },
+      {
+        title: 'Stats Dashboard',
+        prompt: 'Make a stats dashboard with Magic UI featuring animated counters and vibrant color schemes',
+        description: 'Creates a dynamic dashboard with Magic UI\'s number animations'
+      },
+      {
+        title: 'Feature Showcase',
+        prompt: 'Build a feature showcase with Magic UI using cards with pulse effects and colorful accents',
+        description: 'Generates a vibrant feature page with Magic UI\'s magical animations'
+      }
+    ],
     features: [
       'Shimmer effects',
       'Vibrant gradients',
